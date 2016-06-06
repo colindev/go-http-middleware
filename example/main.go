@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"runtime/debug"
+	"os"
 
 	"github.com/colindev/go-http-middleware"
 )
@@ -18,25 +18,14 @@ func (am *AccessMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-type RecoverMiddleware struct{}
-
-func (rm *RecoverMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		defer func() {
-			// recover any panic
-			if rs := recover(); rs != nil {
-				trace := debug.Stack()
-				fmt.Printf("%s\n%s\n", rs, trace)
-			}
-		}()
-
-		handler(w, r)
-	}
-}
-
 func main() {
 
-	mdw := middleware.New(&AccessMiddleware{}, &RecoverMiddleware{})
+	f, err := os.OpenFile("/tmp/error.log", os.O_CREATE|os.O_RDWR|os.O_APPEND, 0644)
+	if err != nil {
+		panic(err)
+	}
+
+	mdw := middleware.New(&AccessMiddleware{}, &middleware.RecoverMiddleware{f})
 
 	http.Handle("/", mdw.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// handler
