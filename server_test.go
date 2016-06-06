@@ -23,12 +23,13 @@ func Example() {
 	md := &XMiddleware{stacks: []int{}}
 
 	server := New(md, md, md)
+	server.Add(md)
 
 	http.Handler(server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	})).ServeHTTP(nil, nil)
 
 	fmt.Println(md.stacks)
-	// Output: [1 2 3]
+	// Output: [1 2 3 4]
 
 }
