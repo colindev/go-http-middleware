@@ -18,7 +18,7 @@ func (x *XMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func ExampleWrapHandlerFunc() {
+func ExampleWrapHandler() {
 
 	md := &XMiddleware{stacks: []int{}}
 
@@ -31,19 +31,5 @@ func ExampleWrapHandlerFunc() {
 
 	fmt.Println(md.stacks)
 	// Output: [1 2 3 4]
-
-}
-
-func ExampleWrapHandler() {
-	md := &XMiddleware{stacks: []int{}}
-
-	ms := New(md, md, md)
-
-	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
-
-	ms.WrapHandler(handler).ServeHTTP(nil, nil)
-
-	fmt.Println(md.stacks)
-	// Output: [1 2 3]
 
 }
