@@ -18,18 +18,32 @@ func (x *XMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func Example() {
+func ExampleWrapHandlerFunc() {
 
 	md := &XMiddleware{stacks: []int{}}
 
-	server := New(md, md, md)
-	server.Add(md)
+	ms := New(md, md, md)
+	ms.Add(md)
 
-	http.Handler(server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handlerFunc := func(w http.ResponseWriter, r *http.Request) {}
 
-	})).ServeHTTP(nil, nil)
+	ms.WrapHandler(handlerFunc).ServeHTTP(nil, nil)
 
 	fmt.Println(md.stacks)
 	// Output: [1 2 3 4]
+
+}
+
+func ExampleWrapHandler() {
+	md := &XMiddleware{stacks: []int{}}
+
+	ms := New(md, md, md)
+
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {})
+
+	ms.WrapHandler(handler).ServeHTTP(nil, nil)
+
+	fmt.Println(md.stacks)
+	// Output: [1 2 3]
 
 }

@@ -20,7 +20,7 @@ func TestIf(t *testing.T) {
 
 	tmw := &TestMiddleware{make([]string, 0)}
 
-	server := New(&IfMiddleware{
+	ifHandler := (&IfMiddleware{
 		Condition: func(r *http.Request) bool {
 
 			if r == nil {
@@ -33,17 +33,13 @@ func TestIf(t *testing.T) {
 		IfTrue: tmw,
 
 		IfFalse: nil,
-	})
+	}).Wrap(func(w http.ResponseWriter, r *http.Request) {})
 
-	app := http.Handler(server.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-	}))
-
-	app.ServeHTTP(nil, nil)
+	ifHandler(nil, nil)
 	req, _ := http.NewRequest("GET", "http://127.0.0.1/true", nil)
-	app.ServeHTTP(nil, req)
+	ifHandler(nil, req)
 	req, _ = http.NewRequest("GET", "http://127.0.0.1/x", nil)
-	app.ServeHTTP(nil, req)
+	ifHandler(nil, req)
 
 	if len(tmw.history) != 1 {
 		t.Error("only one request can pass", tmw.history)
