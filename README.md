@@ -24,7 +24,7 @@ func main() {
 
     mdw := middleware.New(&AccessMiddleware{})
 
-    http.Handle("/", mdw.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+    http.Handle("/", mdw.WrapHandler(func(w http.ResponseWriter, r *http.Request){
         // handler
     }))
 
