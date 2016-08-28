@@ -12,13 +12,13 @@ type XMiddleware struct {
 
 func (x *XMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		x.n += 1
+		x.n++
 		x.stacks = append(x.stacks, x.n)
 		handler(w, r)
 	}
 }
 
-func ExampleWrapHandler() {
+func Examplestacks_WrapHandler() {
 
 	md := &XMiddleware{stacks: []int{}}
 
