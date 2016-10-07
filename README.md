@@ -12,7 +12,7 @@ request middleware handler for native http
 go get -u github.com/colindev/go-http-middleware
 ```
 
-### Example
+### Example WrapHandlerFunc
 
 ```golang
 
@@ -28,9 +28,9 @@ func (am *AccessMiddleware) Wrap(handler http.HandlerFunc) http.HandlerFunc {
 
 func main() {
 
-    mdw := middleware.New(&AccessMiddleware{})
+    wrapper := middleware.New(&AccessMiddleware{})
 
-    http.Handle("/", mdw.WrapHandler(func(w http.ResponseWriter, r *http.Request){
+    http.Handle("/", wrapper.WrapHandler(func(w http.ResponseWriter, r *http.Request){
         // handler
     }))
 
@@ -38,3 +38,25 @@ func main() {
 }
 
 ```
+
+### Example WrapHandler
+
+```golang
+// middlerware 同上
+
+type server struct {}
+
+func (server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    // do some thing
+}
+
+func main() {
+    
+    wrapper := middleware.New(&AccessMiddleware{})
+
+    http.ListenAndServe(":8000", wrapper.WrapHandler(server{}))
+
+}
+
+```
+
