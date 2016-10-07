@@ -30,7 +30,7 @@ func main() {
 
     wrapper := middleware.New(&AccessMiddleware{})
 
-    http.Handle("/", wrapper.WrapHandler(func(w http.ResponseWriter, r *http.Request){
+    http.Handle("/", wrapper.WrapHandlerFunc(func(w http.ResponseWriter, r *http.Request){
         // handler
     }))
 
