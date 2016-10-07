@@ -22,6 +22,7 @@ func (s *stacks) Add(ms ...Middleware) {
 }
 
 func (s *stacks) WrapHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
+
 	for i := len(*s) - 1; i >= 0; i-- {
 		fn = (*s)[i].Wrap(fn)
 	}
