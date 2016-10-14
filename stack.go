@@ -31,8 +31,5 @@ func (s *stacks) WrapHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
 }
 
 func (s *stacks) WrapHandler(handler http.Handler) http.Handler {
-
-	fn := s.WrapHandlerFunc(handler.ServeHTTP)
-
-	return http.HandlerFunc(fn)
+	return s.WrapHandlerFunc(handler.ServeHTTP)
 }
