@@ -5,7 +5,7 @@ import "net/http"
 // Wrapper wrap http.Handler / http.HandlerFunc
 type Wrapper interface {
 	Add(...Middleware)
-	WrapHandlerFunc(http.HandlerFunc) http.HandlerFunc
+	WrapHandlerFunc(http.HandlerFunc, ...string) http.HandlerFunc
 	WrapHandler(http.Handler) http.Handler
 }
 
@@ -21,13 +21,25 @@ func (s *stacks) Add(ms ...Middleware) {
 	*s = append(*s, ms...)
 }
 
-func (s *stacks) WrapHandlerFunc(fn http.HandlerFunc) http.HandlerFunc {
+func (s *stacks) WrapHandlerFunc(fn http.HandlerFunc, methods ...string) http.HandlerFunc {
 
 	for i := len(*s) - 1; i >= 0; i-- {
 		fn = (*s)[i].Wrap(fn)
 	}
 
-	return fn
+	allowMethods := map[string]bool{}
+	for _, m := range methods {
+		allowMethods[m] = true
+	}
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		// 預設不檢查
+		if len(allowMethods) > 0 && !allowMethods[r.Method] {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		fn(w, r)
+	}
 }
 
 func (s *stacks) WrapHandler(handler http.Handler) http.Handler {
